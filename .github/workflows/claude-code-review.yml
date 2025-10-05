@@ -44,7 +44,8 @@ jobs:
         uses: anthropics/claude-code-action@v1
         env:
           ANTHROPIC_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-          ANTHROPIC_API_URL: https://cc.yovy.app/v1
+          ANTHROPIC_BASE_URL: https://cc.yovy.app
+          ANTHROPIC_CUSTOM_HEADERS: "x-api-key: ${{ secrets.OPENROUTER_API_KEY }}"
         with:
           # Use OpenRouter key for authentication
           anthropic_api_key: ${{ secrets.OPENROUTER_API_KEY }}
@@ -54,7 +55,8 @@ jobs:
             {
               "env": {
                 "ANTHROPIC_API_KEY": "${{ secrets.OPENROUTER_API_KEY }}",
-                "ANTHROPIC_API_URL": "https://cc.yovy.app/v1"
+                "ANTHROPIC_BASE_URL": "https://cc.yovy.app",
+                "ANTHROPIC_CUSTOM_HEADERS": "x-api-key: ${{ secrets.OPENROUTER_API_KEY }}"
               }
             }
 
