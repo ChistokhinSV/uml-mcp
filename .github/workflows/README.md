@@ -28,7 +28,7 @@
 - Creates GitHub release with `.mcpb` file attached
 - Never publishes to PyPI
 
-### ✅ `claude-code-review.yml` - AI Code Review
+### ✅ `claude-code-review.yml` - AI Code Review (PRs)
 **Triggers:** Pull requests, Manual
 **What it does:**
 - AI-powered code review using Claude Sonnet 4.5
@@ -38,6 +38,29 @@
 
 **Requirements:**
 - GitHub Secret: `OPENROUTER_API_KEY` must be configured
+
+### ✅ `claude-review-commit.yml` - AI Review Commits
+**Triggers:** Manual workflow dispatch only
+**Inputs:**
+- `commit_sha` (optional): Specific commit SHA to review (defaults to latest main)
+- `create_issue` (optional): Create GitHub issue with results (default: true)
+
+**What it does:**
+- Reviews any commit on main branch without needing a PR
+- Analyzes changes using `git show <commit>`
+- Creates GitHub issue with review results
+- Uploads review as workflow artifact
+- Perfect for reviewing commits already merged to main
+
+**Requirements:**
+- GitHub Secret: `OPENROUTER_API_KEY` must be configured
+
+**How to use:**
+1. Go to Actions → Claude Review Commit
+2. Click "Run workflow"
+3. Leave commit SHA empty to review latest main commit
+4. Or enter specific SHA to review that commit
+5. Review posted as GitHub issue
 
 ---
 

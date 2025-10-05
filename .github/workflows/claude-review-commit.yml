@@ -1,0 +1,184 @@
+name: Claude Review Commit
+
+on:
+  workflow_dispatch:
+    inputs:
+      commit_sha:
+        description: 'Commit SHA to review (leave empty for latest main)'
+        required: false
+        type: string
+      create_issue:
+        description: 'Create GitHub issue with review results'
+        required: false
+        type: boolean
+        default: true
+
+jobs:
+  claude-review-commit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for context
+
+      - name: Determine commit to review
+        id: commit
+        run: |
+          if [ -z "${{ github.event.inputs.commit_sha }}" ]; then
+            COMMIT_SHA=$(git rev-parse HEAD)
+            echo "Reviewing latest commit on main: $COMMIT_SHA"
+          else
+            COMMIT_SHA="${{ github.event.inputs.commit_sha }}"
+            echo "Reviewing specified commit: $COMMIT_SHA"
+          fi
+          echo "sha=$COMMIT_SHA" >> $GITHUB_OUTPUT
+
+          # Get commit details
+          COMMIT_MSG=$(git log -1 --pretty=format:"%s" $COMMIT_SHA)
+          COMMIT_AUTHOR=$(git log -1 --pretty=format:"%an" $COMMIT_SHA)
+          COMMIT_DATE=$(git log -1 --pretty=format:"%ad" $COMMIT_SHA)
+
+          echo "message=$COMMIT_MSG" >> $GITHUB_OUTPUT
+          echo "author=$COMMIT_AUTHOR" >> $GITHUB_OUTPUT
+          echo "date=$COMMIT_DATE" >> $GITHUB_OUTPUT
+
+      - name: Run Claude Code Review
+        id: claude-review
+        uses: anthropics/claude-code-action@v1
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        with:
+          anthropic_api_key: ${{ secrets.OPENROUTER_API_KEY }}
+
+          settings: |
+            {
+              "env": {
+                "ANTHROPIC_API_URL": "https://cc.yovy.app/v1"
+              }
+            }
+
+          model: claude-sonnet-4-20250514
+          track_progress: true
+
+          claude_args: |
+            --max-turns 3
+            --allowed-tools "Bash(git:*),Read,Grep,Glob"
+
+          prompt: |
+            You are reviewing a commit on the main branch of the UML-MCP project.
+
+            **COMMIT DETAILS:**
+            - SHA: ${{ steps.commit.outputs.sha }}
+            - Message: ${{ steps.commit.outputs.message }}
+            - Author: ${{ steps.commit.outputs.author }}
+            - Date: ${{ steps.commit.outputs.date }}
+            - Repository: ${{ github.repository }}
+            - Branch: main
+
+            **YOUR TASK:**
+            1. Use `git show ${{ steps.commit.outputs.sha }}` to see the changes in this commit
+            2. Review the changes following the guidelines in CLAUDE.md
+            3. Focus on:
+               - Code quality issues
+               - Security vulnerabilities
+               - Performance concerns
+               - Breaking changes
+               - Missing tests or documentation
+
+            **REVIEW CRITERIA:**
+            - 🔴 Critical: Security issues, bugs, breaking changes
+            - 🟡 Important: Code quality, performance, best practices
+            - 🟢 Optional: Style improvements, suggestions
+
+            **OUTPUT FORMAT:**
+            Please write your review in Markdown format with these sections:
+
+            ## Summary
+            Brief overview (2-3 sentences)
+
+            ## Changes Reviewed
+            List of files changed
+
+            ## Findings
+
+            ### 🔴 Critical Issues
+            (if any)
+
+            ### 🟡 Important Issues
+            (if any)
+
+            ### 🟢 Suggestions
+            (if any)
+
+            ## Positive Aspects
+            What was done well
+
+            ## Verdict
+            - Overall assessment
+            - Recommend: Approve / Needs attention / Monitor
+
+            After writing your review, save it to a file called `review-output.md` so it can be captured.
+
+      - name: Save review output
+        if: always()
+        run: |
+          if [ -f review-output.md ]; then
+            echo "Review output found"
+            cat review-output.md
+          else
+            echo "No review output file found. Check workflow logs."
+          fi
+
+      - name: Create GitHub Issue with Review
+        if: github.event.inputs.create_issue == 'true' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let reviewBody = '';
+
+            try {
+              reviewBody = fs.readFileSync('review-output.md', 'utf8');
+            } catch (error) {
+              reviewBody = 'Review output not available. Check the [workflow run logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.';
+            }
+
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🤖 Code Review: Commit ${{ steps.commit.outputs.sha }}`,
+              body: `# Automated Code Review
+
+**Commit:** [\`${{ steps.commit.outputs.sha }}\`](${{ github.server_url }}/${{ github.repository }}/commit/${{ steps.commit.outputs.sha }})
+**Message:** ${{ steps.commit.outputs.message }}
+**Author:** ${{ steps.commit.outputs.author }}
+**Date:** ${{ steps.commit.outputs.date }}
+
+---
+
+${reviewBody}
+
+---
+
+*🤖 Generated by [Claude Code Review](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) using Claude Sonnet 4.5*
+`,
+              labels: ['automated-review', 'claude-code-review']
+            });
+
+            console.log(`Created issue #${issue.data.number}`);
+
+      - name: Upload review as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-review-${{ steps.commit.outputs.sha }}
+          path: |
+            review-output.md
+          retention-days: 30
+          if-no-files-found: warn
