@@ -60,11 +60,9 @@ jobs:
             {
               "env": {
                 "ANTHROPIC_API_URL": "https://cc.yovy.app/v1"
-              }
+              },
+              "model": "claude-sonnet-4-20250514"
             }
-
-          model: claude-sonnet-4-20250514
-          track_progress: true
 
           claude_args: |
             --max-turns 3
