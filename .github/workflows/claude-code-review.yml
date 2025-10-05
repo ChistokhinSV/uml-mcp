@@ -69,7 +69,7 @@ jobs:
           # Maximum conversation turns to prevent excessive API calls
           claude_args: |
             --max-turns 3
-            --allowed-tools "Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr list:*),Read,Grep,Glob"
+            --allowed-tools "Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr list:*),Read,Grep,Glob,Write"
 
           # Comprehensive review prompt
           prompt: |

@@ -71,7 +71,7 @@ jobs:
           claude_args: |
             --max-turns 3
             --model anthropic/claude-sonnet-4.5
-            --allowed-tools "Bash(git:*),Read,Grep,Glob"
+            --allowed-tools "Bash(git:*),Read,Grep,Glob,Write"
 
           prompt: |
             You are reviewing a commit on the main branch of the UML-MCP project.
