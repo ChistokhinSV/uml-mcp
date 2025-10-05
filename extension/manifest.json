@@ -66,8 +66,8 @@
     "use_local_plantuml": {
       "type": "boolean",
       "title": "Use Local PlantUML JAR",
-      "description": "Enable to use local plantuml.jar instead of server (requires Java)",
-      "default": false,
+      "description": "Use bundled plantuml.jar for local rendering (requires Java, recommended)",
+      "default": true,
       "required": false
     },
     "plantuml_jar_path": {

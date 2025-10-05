@@ -55,7 +55,7 @@ def main():
         shutil.copy2(project_root / "pyproject.toml", build_path / "pyproject.toml")
 
         # Copy package directories
-        packages = ["mcp_core", "kroki", "mermaid", "plantuml", "D2", "ai_uml"]
+        packages = ["mcp_core", "kroki", "mermaid", "plantuml_local", "D2", "ai_uml"]
         for pkg in packages:
             pkg_path = project_root / pkg
             if pkg_path.exists():

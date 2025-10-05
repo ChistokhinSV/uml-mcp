@@ -15,6 +15,33 @@ _lib_dir = _script_dir / "lib"
 if _lib_dir.exists() and str(_lib_dir) not in sys.path:
     sys.path.insert(0, str(_lib_dir))
 
+# Platform validation for bundled dependencies
+if _lib_dir.exists():
+    import platform
+    current_platform = platform.system()
+
+    # Check for platform-specific binary files to detect build platform
+    sample_binaries = list(_lib_dir.glob("**/*.so")) + list(_lib_dir.glob("**/*.pyd"))
+
+    if sample_binaries:
+        has_linux_binaries = any(f.suffix == ".so" for f in sample_binaries)
+        has_windows_binaries = any(f.suffix == ".pyd" for f in sample_binaries)
+
+        if current_platform == "Windows" and has_linux_binaries and not has_windows_binaries:
+            print(f"[bold red]ERROR: Platform mismatch detected![/bold red]", file=sys.stderr)
+            print(f"[yellow]You are running on Windows but this extension was built for Linux.[/yellow]", file=sys.stderr)
+            print(f"[yellow]Please download the correct version:[/yellow]", file=sys.stderr)
+            print(f"  - Windows: uml-mcp-windows.mcpb", file=sys.stderr)
+            print(f"  - Linux/macOS: uml-mcp-linux.mcpb", file=sys.stderr)
+            sys.exit(1)
+        elif current_platform == "Linux" and has_windows_binaries and not has_linux_binaries:
+            print(f"[bold red]ERROR: Platform mismatch detected![/bold red]", file=sys.stderr)
+            print(f"[yellow]You are running on Linux but this extension was built for Windows.[/yellow]", file=sys.stderr)
+            print(f"[yellow]Please download the correct version:[/yellow]", file=sys.stderr)
+            print(f"  - Windows: uml-mcp-windows.mcpb", file=sys.stderr)
+            print(f"  - Linux/macOS: uml-mcp-linux.mcpb", file=sys.stderr)
+            sys.exit(1)
+
 import zlib
 import base64
 from typing import Dict, Any
