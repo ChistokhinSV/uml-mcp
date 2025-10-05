@@ -7,7 +7,7 @@ import tempfile
 from unittest.mock import patch, MagicMock, mock_open
 from pathlib import Path
 
-from plantuml import (
+from plantuml_local import (
     PlantUMLClient,
     PlantUMLError,
     JavaNotFoundError,
@@ -235,7 +235,7 @@ class TestPlantUMLClient:
 class TestHelperFunctions:
     """Test helper functions."""
 
-    @patch('plantuml.plantuml_client.PlantUMLClient')
+    @patch('plantuml_local.plantuml_client.PlantUMLClient')
     def test_check_java_installation_success(self, mock_client):
         """Test Java installation check success."""
         mock_instance = MagicMock()
@@ -246,7 +246,7 @@ class TestHelperFunctions:
         assert is_installed is True
         assert "21.0.1" in message
 
-    @patch('plantuml.plantuml_client.PlantUMLClient')
+    @patch('plantuml_local.plantuml_client.PlantUMLClient')
     def test_check_java_installation_failure(self, mock_client):
         """Test Java installation check failure."""
         mock_client.side_effect = JavaNotFoundError("Java not found")
@@ -255,7 +255,7 @@ class TestHelperFunctions:
         assert is_installed is False
         assert "Java not found" in message
 
-    @patch('plantuml.plantuml_client.PlantUMLClient')
+    @patch('plantuml_local.plantuml_client.PlantUMLClient')
     def test_check_plantuml_jar_success(self, mock_client):
         """Test PlantUML JAR check success."""
         mock_instance = MagicMock()
@@ -266,7 +266,7 @@ class TestHelperFunctions:
         assert is_available is True
         assert "/path/to/plantuml.jar" in message
 
-    @patch('plantuml.plantuml_client.PlantUMLClient')
+    @patch('plantuml_local.plantuml_client.PlantUMLClient')
     def test_check_plantuml_jar_failure(self, mock_client):
         """Test PlantUML JAR check failure."""
         mock_client.side_effect = PlantUMLJarNotFoundError("JAR not found")
@@ -282,8 +282,8 @@ class TestJavaDetection:
     def test_detect_java_from_path(self):
         """Test Java detection from PATH."""
         with patch('shutil.which', return_value='/usr/bin/java'), \
-             patch('plantuml.plantuml_client.PlantUMLClient._detect_jar', return_value='/fake/jar'), \
-             patch('plantuml.plantuml_client.PlantUMLClient._verify_java'):
+             patch('plantuml_local.plantuml_client.PlantUMLClient._detect_jar', return_value='/fake/jar'), \
+             patch('plantuml_local.plantuml_client.PlantUMLClient._verify_java'):
             client = PlantUMLClient()
             assert '/usr/bin/java' in client.java_path
 
@@ -294,8 +294,8 @@ class TestJavaDetection:
 
         with patch.dict(os.environ, {'JAVA_HOME': java_home}), \
              patch('os.path.isfile', return_value=True), \
-             patch('plantuml.plantuml_client.PlantUMLClient._detect_jar', return_value='/fake/jar'), \
-             patch('plantuml.plantuml_client.PlantUMLClient._verify_java'):
+             patch('plantuml_local.plantuml_client.PlantUMLClient._detect_jar', return_value='/fake/jar'), \
+             patch('plantuml_local.plantuml_client.PlantUMLClient._verify_java'):
             client = PlantUMLClient()
             assert java_exe == client.java_path
 
@@ -309,8 +309,8 @@ class TestJarDetection:
         jar_path.write_bytes(b"fake")
 
         with patch.dict(os.environ, {'PLANTUML_JAR_PATH': str(jar_path)}), \
-             patch('plantuml.plantuml_client.PlantUMLClient._detect_java', return_value='/usr/bin/java'), \
-             patch('plantuml.plantuml_client.PlantUMLClient._verify_java'):
+             patch('plantuml_local.plantuml_client.PlantUMLClient._detect_java', return_value='/usr/bin/java'), \
+             patch('plantuml_local.plantuml_client.PlantUMLClient._verify_java'):
             client = PlantUMLClient()
             assert client.jar_path == str(jar_path)
 
@@ -318,7 +318,7 @@ class TestJarDetection:
         """Test JAR detection from extension/bin directory."""
         # This test verifies that the actual code can find the jar in extension/bin
         # We use the real project structure
-        import plantuml.plantuml_client as pc
+        import plantuml_local.plantuml_client as pc
 
         script_dir = Path(pc.__file__).parent.parent
         expected_jar = script_dir / 'extension' / 'bin' / 'plantuml.jar'
@@ -327,8 +327,8 @@ class TestJarDetection:
         if not expected_jar.is_file():
             pytest.skip("plantuml.jar not found in extension/bin")
 
-        with patch('plantuml.plantuml_client.PlantUMLClient._detect_java', return_value='/usr/bin/java'), \
-             patch('plantuml.plantuml_client.PlantUMLClient._verify_java'), \
+        with patch('plantuml_local.plantuml_client.PlantUMLClient._detect_java', return_value='/usr/bin/java'), \
+             patch('plantuml_local.plantuml_client.PlantUMLClient._verify_java'), \
              patch('pathlib.Path.home', return_value=tmp_path), \
              patch.dict(os.environ, {}, clear=True):  # Clear env to test auto-detection
 

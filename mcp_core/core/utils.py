@@ -15,7 +15,7 @@ from .config import MCP_SETTINGS
 
 # Import PlantUML client for local generation
 try:
-    from plantuml import PlantUMLClient, JavaNotFoundError, PlantUMLJarNotFoundError
+    from plantuml_local import PlantUMLClient, JavaNotFoundError, PlantUMLJarNotFoundError
     PLANTUML_AVAILABLE = True
 except ImportError:
     PLANTUML_AVAILABLE = False

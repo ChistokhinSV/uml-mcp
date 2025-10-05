@@ -34,7 +34,6 @@ dependencies = [
     "starlette>=0.27.0",
 
     # Diagram libraries
-    "plantUML>=0.3.0",
     "graphviz>=0.20.1",
 
     # Additional utilities
@@ -75,7 +74,7 @@ Issues = "https://github.com/ChistokhinSV/uml-mcp/issues"
 uml-mcp = "mcp_server:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["mcp_core", "kroki", "mermaid", "plantuml", "D2", "ai_uml"]
+packages = ["mcp_core", "kroki", "mermaid", "plantuml_local", "D2", "ai_uml"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
