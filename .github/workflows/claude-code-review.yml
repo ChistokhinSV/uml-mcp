@@ -49,6 +49,15 @@ jobs:
           # Use OpenRouter key for authentication
           anthropic_api_key: ${{ secrets.OPENROUTER_API_KEY }}
 
+          # Configure y-router API endpoint for Claude Code subprocess
+          settings: |
+            {
+              "env": {
+                "ANTHROPIC_API_KEY": "${{ secrets.OPENROUTER_API_KEY }}",
+                "ANTHROPIC_API_URL": "https://cc.yovy.app/v1"
+              }
+            }
+
           # Use Claude Sonnet 4.5
           model: anthropic/claude-sonnet-4.5
 
