@@ -281,11 +281,12 @@ class TestJavaDetection:
 
     def test_detect_java_from_path(self):
         """Test Java detection from PATH."""
-        with patch('shutil.which', return_value='/usr/bin/java'), \
+        with patch.dict(os.environ, {}, clear=True), \
+             patch('shutil.which', return_value='/usr/bin/java'), \
              patch('plantuml_local.plantuml_client.PlantUMLClient._detect_jar', return_value='/fake/jar'), \
              patch('plantuml_local.plantuml_client.PlantUMLClient._verify_java'):
             client = PlantUMLClient()
-            assert '/usr/bin/java' in client.java_path
+            assert client.java_path == '/usr/bin/java'
 
     def test_detect_java_from_java_home(self):
         """Test Java detection from JAVA_HOME."""
