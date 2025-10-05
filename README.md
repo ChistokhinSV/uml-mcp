@@ -115,21 +115,72 @@ The easiest way to install UML-MCP is using the Claude Desktop Extension:
 
 #### Claude Desktop (Manual Configuration)
 
-If you prefer manual configuration or the extension isn't available:
-
-**On MacOS:** `~/Library/Application\ Support/Claude/claude_desktop_config.json`
-**On Windows:** `%APPDATA%/Claude/claude_desktop_config.json`
+If you prefer manual configuration or the extension isn't available, you can manually configure the MCP server.
 
 <details>
-  <summary>Claude Desktop Manual Configuration</summary>
+  <summary><b>📝 Step-by-Step Manual Installation</b></summary>
+
+  ### 1. Install Dependencies
+
+  First, ensure UV and project dependencies are installed:
+
+  ```bash
+  # Install UV package manager
+  # Windows
+  winget install --id=astral-sh.uv -e
+  # Linux/Mac
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+
+  # Clone and install UML-MCP
+  git clone https://github.com/ChistokhinSV/uml-mcp.git
+  cd uml-mcp
+  uv pip install -e .
+  ```
+
+  ### 2. Locate Configuration File
+
+  **macOS:**
+  ```bash
+  ~/Library/Application Support/Claude/claude_desktop_config.json
+  ```
+
+  **Windows:**
+  ```
+  %APPDATA%\Claude\claude_desktop_config.json
+  ```
+  (Typically: `C:\Users\YOUR_USERNAME\AppData\Roaming\Claude\claude_desktop_config.json`)
+
+  **Linux:**
+  ```bash
+  ~/.config/Claude/claude_desktop_config.json
+  ```
+
+  ### 3. Edit Configuration File
+
+  Create or edit the file with your preferred text editor:
+
+  **macOS/Linux:**
+  ```bash
+  nano ~/Library/Application\ Support/Claude/claude_desktop_config.json
+  ```
+
+  **Windows:**
+  ```powershell
+  notepad %APPDATA%\Claude\claude_desktop_config.json
+  ```
+
+  ### 4. Add UML-MCP Server Configuration
+
+  <details>
+    <summary><b>Basic Configuration</b></summary>
 
   ```json
   {
     "mcpServers": {
-      "uml_diagram_generator": {
+      "uml-mcp": {
         "command": "python",
         "args": [
-          "/path/to/uml-mcp/mcp_server.py"
+          "/absolute/path/to/uml-mcp/mcp_server.py"
         ],
         "env": {
           "MCP_OUTPUT_DIR": "/path/to/output/directory"
@@ -138,28 +189,412 @@ If you prefer manual configuration or the extension isn't available:
     }
   }
   ```
+
+  **Replace:**
+  - `/absolute/path/to/uml-mcp/mcp_server.py` with your actual installation path
+  - `/path/to/output/directory` with where you want diagrams saved
+
+  **Example (macOS):**
+  ```json
+  {
+    "mcpServers": {
+      "uml-mcp": {
+        "command": "python3",
+        "args": [
+          "/Users/username/projects/uml-mcp/mcp_server.py"
+        ],
+        "env": {
+          "MCP_OUTPUT_DIR": "/Users/username/Documents/UML-Diagrams"
+        }
+      }
+    }
+  }
+  ```
+
+  **Example (Windows):**
+  ```json
+  {
+    "mcpServers": {
+      "uml-mcp": {
+        "command": "python",
+        "args": [
+          "C:\\Users\\username\\projects\\uml-mcp\\mcp_server.py"
+        ],
+        "env": {
+          "MCP_OUTPUT_DIR": "C:\\Users\\username\\Documents\\UML-Diagrams"
+        }
+      }
+    }
+  }
+  ```
+
+  **Example (Linux):**
+  ```json
+  {
+    "mcpServers": {
+      "uml-mcp": {
+        "command": "python3",
+        "args": [
+          "/home/username/projects/uml-mcp/mcp_server.py"
+        ],
+        "env": {
+          "MCP_OUTPUT_DIR": "/home/username/Documents/UML-Diagrams"
+        }
+      }
+    }
+  }
+  ```
+
+  </details>
+
+  <details>
+    <summary><b>Advanced Configuration (with Custom Kroki Server)</b></summary>
+
+  ```json
+  {
+    "mcpServers": {
+      "uml-mcp": {
+        "command": "python",
+        "args": [
+          "/absolute/path/to/uml-mcp/mcp_server.py"
+        ],
+        "env": {
+          "MCP_OUTPUT_DIR": "/path/to/output/directory",
+          "KROKI_SERVER": "https://kroki.io",
+          "USE_LOCAL_KROKI": "false",
+          "PLANTUML_SERVER": "http://localhost:8080",
+          "USE_LOCAL_PLANTUML": "false"
+        }
+      }
+    }
+  }
+  ```
+
+  **Custom Kroki Server Example:**
+  ```json
+  {
+    "mcpServers": {
+      "uml-mcp": {
+        "command": "python",
+        "args": [
+          "/Users/username/projects/uml-mcp/mcp_server.py"
+        ],
+        "env": {
+          "MCP_OUTPUT_DIR": "/Users/username/Documents/UML-Diagrams",
+          "KROKI_SERVER": "http://localhost:8000",
+          "USE_LOCAL_KROKI": "true"
+        }
+      }
+    }
+  }
+  ```
+
+  </details>
+
+  <details>
+    <summary><b>Using Virtual Environment (Recommended)</b></summary>
+
+  If you're using a Python virtual environment:
+
+  ```json
+  {
+    "mcpServers": {
+      "uml-mcp": {
+        "command": "/absolute/path/to/uml-mcp/.venv/bin/python",
+        "args": [
+          "/absolute/path/to/uml-mcp/mcp_server.py"
+        ],
+        "env": {
+          "MCP_OUTPUT_DIR": "/path/to/output/directory"
+        }
+      }
+    }
+  }
+  ```
+
+  **macOS/Linux Example:**
+  ```json
+  {
+    "mcpServers": {
+      "uml-mcp": {
+        "command": "/Users/username/projects/uml-mcp/.venv/bin/python",
+        "args": [
+          "/Users/username/projects/uml-mcp/mcp_server.py"
+        ],
+        "env": {
+          "MCP_OUTPUT_DIR": "/Users/username/Documents/UML-Diagrams"
+        }
+      }
+    }
+  }
+  ```
+
+  **Windows Example:**
+  ```json
+  {
+    "mcpServers": {
+      "uml-mcp": {
+        "command": "C:\\Users\\username\\projects\\uml-mcp\\.venv\\Scripts\\python.exe",
+        "args": [
+          "C:\\Users\\username\\projects\\uml-mcp\\mcp_server.py"
+        ],
+        "env": {
+          "MCP_OUTPUT_DIR": "C:\\Users\\username\\Documents\\UML-Diagrams"
+        }
+      }
+    }
+  }
+  ```
+
+  </details>
+
+  ### 5. Restart Claude Desktop
+
+  After saving the configuration file:
+  1. Quit Claude Desktop completely
+  2. Relaunch Claude Desktop
+  3. The UML-MCP server should now be available
+
+  ### 6. Verify Installation
+
+  In Claude Desktop, try asking:
+  ```
+  "Generate a simple UML class diagram with User and Order classes"
+  ```
+
+  If successful, you'll see the diagram generated and saved to your output directory.
+
+</details>
+
+<details>
+  <summary><b>🔧 Configuration Options Reference</b></summary>
+
+  ### Required Fields
+
+  | Field | Description | Example |
+  |-------|-------------|---------|
+  | `command` | Python executable path | `"python"` or `"python3"` |
+  | `args` | Array with server script path | `["/path/to/mcp_server.py"]` |
+
+  ### Environment Variables
+
+  | Variable | Default | Description |
+  |----------|---------|-------------|
+  | `MCP_OUTPUT_DIR` | `./output` | Directory to save generated diagrams |
+  | `KROKI_SERVER` | `https://kroki.io` | Kroki server URL for rendering |
+  | `PLANTUML_SERVER` | `http://plantuml-server:8080` | PlantUML server URL |
+  | `USE_LOCAL_KROKI` | `false` | Use local Kroki instance |
+  | `USE_LOCAL_PLANTUML` | `false` | Use local PlantUML instance |
+  | `LOG_LEVEL` | `INFO` | Logging level (DEBUG, INFO, WARNING, ERROR) |
+
+  ### Example: Minimal Configuration
+
+  ```json
+  {
+    "mcpServers": {
+      "uml-mcp": {
+        "command": "python",
+        "args": ["/path/to/uml-mcp/mcp_server.py"]
+      }
+    }
+  }
+  ```
+
+  **Note:** Without `MCP_OUTPUT_DIR`, diagrams save to `./output` in the server directory.
+
+</details>
+
+<details>
+  <summary><b>⚠️ Troubleshooting</b></summary>
+
+  ### Server Not Starting
+
+  **Issue:** UML-MCP doesn't appear in Claude Desktop
+
+  **Solutions:**
+  1. Verify Python is in PATH: `python --version` or `python3 --version`
+  2. Check file paths are absolute (not relative)
+  3. Ensure `mcp_server.py` exists at specified path
+  4. Review Claude Desktop logs:
+     - **macOS:** `~/Library/Logs/Claude/mcp-server-uml-mcp.log`
+     - **Windows:** `%APPDATA%\Claude\logs\mcp-server-uml-mcp.log`
+
+  ### Import Errors
+
+  **Issue:** `ModuleNotFoundError` or `ImportError`
+
+  **Solutions:**
+  1. Ensure dependencies are installed: `uv pip install -e .`
+  2. Use virtual environment Python path in `command`
+  3. Check UV installed packages: `uv pip list`
+
+  ### Diagrams Not Generating
+
+  **Issue:** Tools work but no diagram files appear
+
+  **Solutions:**
+  1. Verify `MCP_OUTPUT_DIR` exists and is writable
+  2. Check directory permissions
+  3. Try absolute path for output directory
+  4. Test Kroki server connectivity: `curl https://kroki.io`
+
+  ### Windows Path Issues
+
+  **Issue:** Backslashes in paths causing errors
+
+  **Solutions:**
+  - Use double backslashes: `C:\\Users\\name\\path`
+  - Or use forward slashes: `C:/Users/name/path`
+
+  ### Permission Denied
+
+  **Issue:** Cannot write to output directory
+
+  **Solutions:**
+  ```bash
+  # macOS/Linux
+  chmod 755 /path/to/output/directory
+
+  # Windows (PowerShell as Admin)
+  icacls "C:\path\to\output" /grant Users:F
+  ```
+
 </details>
 
 #### Cursor
 
-To integrate with Cursor:
-
 <details>
-  <summary>Cursor Configuration</summary>
+  <summary><b>📝 Cursor IDE Configuration</b></summary>
 
-```json
-{
-  "mcpServers": {
-    "UML-MCP-Server": {
-      "command": "python",
-      "args": ["/path/to/uml-mcp/mcp_server.py"],
-      "env": {
-        "MCP_OUTPUT_DIR": "/path/to/output"
+  ### 1. Locate Cursor Settings
+
+  Cursor settings are typically located at:
+
+  **macOS/Linux:**
+  ```bash
+  ~/.cursor/mcp_settings.json
+  ```
+
+  **Windows:**
+  ```
+  %APPDATA%\Cursor\User\mcp_settings.json
+  ```
+
+  ### 2. Configure MCP Server
+
+  <details>
+    <summary><b>Basic Configuration</b></summary>
+
+  ```json
+  {
+    "mcpServers": {
+      "uml-mcp": {
+        "command": "python",
+        "args": [
+          "/absolute/path/to/uml-mcp/mcp_server.py"
+        ],
+        "env": {
+          "MCP_OUTPUT_DIR": "/path/to/output/directory"
+        }
       }
     }
   }
-}
-```
+  ```
+
+  **macOS Example:**
+  ```json
+  {
+    "mcpServers": {
+      "uml-mcp": {
+        "command": "python3",
+        "args": [
+          "/Users/username/projects/uml-mcp/mcp_server.py"
+        ],
+        "env": {
+          "MCP_OUTPUT_DIR": "/Users/username/Documents/UML-Diagrams"
+        }
+      }
+    }
+  }
+  ```
+
+  **Windows Example:**
+  ```json
+  {
+    "mcpServers": {
+      "uml-mcp": {
+        "command": "python",
+        "args": [
+          "C:\\Users\\username\\projects\\uml-mcp\\mcp_server.py"
+        ],
+        "env": {
+          "MCP_OUTPUT_DIR": "C:\\Users\\username\\Documents\\UML-Diagrams"
+        }
+      }
+    }
+  }
+  ```
+
+  </details>
+
+  <details>
+    <summary><b>Advanced Configuration</b></summary>
+
+  ```json
+  {
+    "mcpServers": {
+      "uml-mcp": {
+        "command": "/path/to/.venv/bin/python",
+        "args": [
+          "/absolute/path/to/uml-mcp/mcp_server.py"
+        ],
+        "env": {
+          "MCP_OUTPUT_DIR": "/path/to/output/directory",
+          "KROKI_SERVER": "https://kroki.io",
+          "USE_LOCAL_KROKI": "false",
+          "LOG_LEVEL": "INFO"
+        }
+      }
+    }
+  }
+  ```
+
+  </details>
+
+  ### 3. Restart Cursor
+
+  After saving the configuration:
+  1. Close all Cursor windows
+  2. Restart Cursor
+  3. UML-MCP tools should now be available
+
+  ### 4. Verify Installation
+
+  In Cursor, try using the MCP tools through the command palette or by asking the AI assistant to generate a diagram.
+
+</details>
+
+<details>
+  <summary><b>🔧 Other MCP Clients</b></summary>
+
+  UML-MCP works with any MCP-compatible client. General configuration format:
+
+  ```json
+  {
+    "mcpServers": {
+      "uml-mcp": {
+        "command": "python",
+        "args": ["/path/to/uml-mcp/mcp_server.py"],
+        "env": {
+          "MCP_OUTPUT_DIR": "/output/directory"
+        }
+      }
+    }
+  }
+  ```
+
+  Consult your MCP client's documentation for specific configuration file locations and formats.
+
 </details>
 
 ### Environment Variables
