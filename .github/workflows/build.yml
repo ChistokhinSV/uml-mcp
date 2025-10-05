@@ -9,6 +9,8 @@ on:
 
 jobs:
   build:
+    # Skip if commit is from github-actions bot (prevents build loop)
+    if: github.event.head_commit.author.name != 'github-actions[bot]'
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
