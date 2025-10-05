@@ -5,7 +5,16 @@ UML Diagram Generator - Simplified MCP Server
 A minimal MCP server for generating UML diagrams using FastMCP, Typer, and Rich.
 """
 
+# Add lib directory to path (for bundled dependencies in Desktop Extension)
+import sys
 import os
+from pathlib import Path
+
+_script_dir = Path(__file__).parent
+_lib_dir = _script_dir / "lib"
+if _lib_dir.exists() and str(_lib_dir) not in sys.path:
+    sys.path.insert(0, str(_lib_dir))
+
 import zlib
 import base64
 from typing import Dict, Any

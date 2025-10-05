@@ -5,6 +5,8 @@ import os
 import shutil
 import tempfile
 import zipfile
+import subprocess
+import sys
 from pathlib import Path
 
 def main():
@@ -59,6 +61,42 @@ def main():
             if pkg_path.exists():
                 print(f"Copying {pkg}/...")
                 shutil.copytree(pkg_path, build_path / pkg)
+
+        # Install dependencies to lib directory within the extension
+        print("\nInstalling Python dependencies...")
+        lib_dir = build_path / "lib"
+        lib_dir.mkdir(exist_ok=True)
+
+        try:
+            # Use pip to install dependencies to lib directory
+            # Install with all transitive dependencies
+            result = subprocess.run([
+                sys.executable, "-m", "pip", "install",
+                "--target", str(lib_dir),
+                "--upgrade",
+                "typer>=0.9.0",
+                "rich>=13.6.0",
+                "httpx>=0.24.1",
+                "pydantic>=2.4.2",
+                "fastmcp>=0.4.0",
+                "mcp>=1.2.0"
+            ], check=True, capture_output=True, text=True)
+
+            if result.stdout:
+                print(f"  {result.stdout.strip()}")
+            print("[OK] Dependencies installed successfully")
+
+            # Count installed packages
+            package_count = len([d for d in lib_dir.iterdir() if d.is_dir() and not d.name.startswith('_')])
+            print(f"  Installed {package_count} packages to lib/")
+
+        except subprocess.CalledProcessError as e:
+            print(f"[ERROR] Failed to install dependencies: {e}")
+            if e.stdout:
+                print(f"  stdout: {e.stdout}")
+            if e.stderr:
+                print(f"  stderr: {e.stderr}")
+            return 1
 
         # Create the .mcpb package (it's just a ZIP file)
         print("Creating .mcpb package...")
