@@ -57,7 +57,7 @@ jobs:
             }
 
           # Use Claude Sonnet 4.5
-          model: claude-sonnet-4-20250514
+          model: anthropic/claude-sonnet-4.5
 
           # Enable progress tracking
           track_progress: true
