@@ -27,7 +27,8 @@
     "mcp_config": {
       "command": "python",
       "args": [
-        "${__dirname}/mcp_server.py"
+        "${__dirname}/mcp_server.py",
+        "run"
       ],
       "env": {
         "MCP_OUTPUT_DIR": "${user_config.output_dir}",
