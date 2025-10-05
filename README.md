@@ -12,8 +12,8 @@ UML-MCP is a powerful diagram generation server that implements the Model Contex
 
 **⚠️ IMPORTANT: Download the version for your operating system:**
 
-- 🪟 **Windows**: [Download uml-mcp-windows.mcpb](https://github.com/ChistokhinSV/uml-mcp/releases/latest/download/uml-mcp-windows.mcpb)
-- 🐧 **Linux/macOS**: [Download uml-mcp-linux.mcpb](https://github.com/ChistokhinSV/uml-mcp/releases/latest/download/uml-mcp-linux.mcpb)
+- 🪟 **Windows**: [Download uml-mcp-windows.mcpb](https://github.com/ChistokhinSV/uml-mcp/raw/main/uml-mcp-windows.mcpb) (63 MB)
+- 🐧 **Linux/macOS**: [Download uml-mcp-linux.mcpb](https://github.com/ChistokhinSV/uml-mcp/raw/main/uml-mcp-linux.mcpb) (50 MB)
 
 > **One-click installation**: Download the correct `.mcpb` file for your OS and double-click to install in Claude Desktop.
 
