@@ -44,3 +44,7 @@ Thumbs.db
 
 # Environment variables
 .env
+
+# Desktop Extension builds (available as GitHub Releases and Actions artifacts)
+uml-mcp.mcpb
+uml-mcp-*.mcpb
