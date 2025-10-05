@@ -61,12 +61,12 @@ jobs:
             {
               "env": {
                 "ANTHROPIC_API_URL": "https://cc.yovy.app/v1"
-              },
-              "model": "claude-sonnet-4-20250514"
+              }
             }
 
           claude_args: |
             --max-turns 3
+            --model claude-sonnet-4-20250514
             --allowed-tools "Bash(git:*),Read,Grep,Glob"
 
           prompt: |
