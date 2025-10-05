@@ -79,8 +79,7 @@ cli = typer.Typer()
 @cli.command()
 def run():
     """Run the MCP server using stdio transport."""
-    console = Console()
-    console.print("[bold green]Starting UML Diagram Generator MCP Server...[/bold green]")
+    # Don't print to stdout - it interferes with MCP JSON-RPC protocol
     server.run()
 
 
