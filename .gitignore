@@ -42,8 +42,5 @@ Thumbs.db
 # MCP specific
 .mcp/
 
-# Desktop Extension builds
-*.mcpb
-
 # Environment variables
 .env

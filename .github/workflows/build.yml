@@ -9,10 +9,11 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.10', '3.11', '3.12']
+        os: [ubuntu-latest, windows-latest]
+        python-version: ['3.10']
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout code
@@ -23,24 +24,39 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install UV
+      - name: Install UV (Linux)
+        if: runner.os == 'Linux'
         run: |
           curl -LsSf https://astral.sh/uv/install.sh | sh
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Install UV (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          irm https://astral.sh/uv/install.ps1 | iex
+          echo "$env:USERPROFILE\.cargo\bin" >> $env:GITHUB_PATH
 
       - name: Install dependencies
         run: |
           uv pip install --system -e ".[dev]"
 
-      - name: Build package
+      - name: Build Python package
         run: |
           uv pip install --system build
           python -m build
           ls -la dist/
 
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: uml-mcp-dist-${{ matrix.python-version }}
-          path: dist/
-          retention-days: 5
+      - name: Build Desktop Extension (Linux only)
+        if: runner.os == 'Linux'
+        run: |
+          cd extension
+          python build.py
+
+      - name: Commit Extension to Repo (Linux only)
+        if: runner.os == 'Linux' && github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add uml-mcp.mcpb
+          git diff --staged --quiet || git commit -m "Auto-build: Update uml-mcp.mcpb extension"
+          git push

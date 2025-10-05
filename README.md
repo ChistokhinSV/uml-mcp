@@ -4,7 +4,13 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![smithery badge](https://smithery.ai/badge/@antoinebou12/uml)](https://smithery.ai/server/@antoinebou12/uml)
 
-UML-MCP is a powerful diagram generation server that implements the Model Context Protocol (MCP), enabling seamless diagram creation directly from AI assistants and other applications. 
+UML-MCP is a powerful diagram generation server that implements the Model Context Protocol (MCP), enabling seamless diagram creation directly from AI assistants and other applications.
+
+## 📥 Quick Install
+
+**[⬇️ Download Claude Desktop Extension](https://github.com/ChistokhinSV/uml-mcp/raw/main/uml-mcp.mcpb)** (click to download and install)
+
+> **One-click installation**: Download the `.mcpb` file and double-click to install in Claude Desktop. Works on Windows, macOS, and Linux. 
 
 ## 🌟 Features
 
@@ -79,26 +85,12 @@ This will start the server using stdio for communication with MCP clients.
 
 ### Claude Desktop Extension (Recommended)
 
-The easiest way to install UML-MCP is using the Claude Desktop Extension:
+**[⬇️ Download Extension](https://github.com/ChistokhinSV/uml-mcp/raw/main/uml-mcp.mcpb)** and double-click to install.
 
-#### One-Click Installation
-
-1. **Download the pre-built extension:**
-   - Go to [Releases](https://github.com/ChistokhinSV/uml-mcp/releases)
-   - Download the latest `uml-mcp.mcpb` file
-
-   > **Cross-platform compatible**: The same `.mcpb` file works on Windows, macOS, and Linux
-
-2. **Install in Claude Desktop:**
-   - **Option A**: Double-click `uml-mcp.mcpb`
-   - **Option B**: Claude Desktop → Settings → Extensions → Import Extension → Select `uml-mcp.mcpb`
-   - Configure output directory (default: `~/Documents/UML-MCP/diagrams`)
-   - Click "Install"
-
-3. **Start using:**
-   - Open Claude Desktop
-   - Ask Claude to generate diagrams
-   - Diagrams are automatically saved to your configured directory
+The extension works on Windows, macOS, and Linux. After installation:
+- Configure output directory (default: `~/Documents/UML-MCP/diagrams`)
+- Ask Claude to generate diagrams
+- Diagrams are automatically saved to your configured directory
 
 **Benefits:**
 - ✅ One-click installation

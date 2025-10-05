@@ -1,0 +1,81 @@
+name: Create Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., v1.3.0)'
+        required: true
+        type: string
+      release_notes:
+        description: 'Release notes'
+        required: false
+        type: string
+        default: 'See CHANGELOG.md for details'
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install UV
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        run: |
+          uv pip install --system -e ".[dev]"
+
+      - name: Build Desktop Extension
+        run: |
+          cd extension
+          python build.py
+
+      - name: Verify build
+        run: |
+          ls -lh uml-mcp.mcpb
+          file uml-mcp.mcpb
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.event.inputs.version }}
+          name: UML-MCP Desktop Extension ${{ github.event.inputs.version }}
+          body: |
+            ## 🚀 One-Click Installation for Claude Desktop
+
+            Download `uml-mcp.mcpb` and double-click to install, or import via Claude Desktop → Settings → Extensions.
+
+            ### Features
+            - 13 diagram generation tools (UML, Mermaid, D2, Graphviz, ERD)
+            - 3 prompt templates
+            - Cross-platform support (Windows, macOS, Linux)
+            - Automatic dependency management
+
+            ### Installation
+            1. Download `uml-mcp.mcpb`
+            2. Double-click the file OR import via Claude Desktop → Settings → Extensions
+            3. Configure output directory
+            4. Start generating diagrams!
+
+            ### Release Notes
+            ${{ github.event.inputs.release_notes }}
+
+            See [DESKTOP_EXTENSION_GUIDE.md](https://github.com/ChistokhinSV/uml-mcp/blob/main/DESKTOP_EXTENSION_GUIDE.md) for detailed usage instructions.
+          files: |
+            uml-mcp.mcpb
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
