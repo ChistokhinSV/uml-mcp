@@ -83,8 +83,9 @@ Value: <your-openrouter-api-key>
 1. Go to repository Settings
 2. Navigate to Secrets and variables → Actions
 3. Click "New repository secret"
-4. Enter name and value
-5. Click "Add secret"
+4. Name: `OPENROUTER_API_KEY`
+5. Value: Your OpenRouter API key (starts with `sk-or-v1-...`)
+6. Click "Add secret"
 
 ---
 
