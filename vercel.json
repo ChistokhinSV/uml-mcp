@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "buildCommand": "pip install -r requirements.txt -r requirements-dev.txt",
-  "installCommand": "pip install --upgrade pip",
+  "buildCommand": "pip install uv && uv pip install -e .",
+  "installCommand": "pip install uv",
   "framework": null,
   "outputDirectory": ".vercel/output/static",
   "builds": [

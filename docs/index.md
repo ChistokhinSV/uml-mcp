@@ -48,7 +48,7 @@ mkdocs serve
 
 - Added `rich` for better terminal output.
 - Added `typer` for CLI building.
-- Added `uvloop` for improved event loop performance.
+- Added cross-platform async support (automatically uses `uvloop` on Linux/Mac when available).
 - Added `poetry` for dependency management.
 
 Refer to the `mkdocs.yml` file for configuration details.

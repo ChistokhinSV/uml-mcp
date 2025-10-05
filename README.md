@@ -28,27 +28,39 @@ UML-MCP supports a wide variety of diagram types:
 ### Prerequisites
 
 - Python 3.10 or higher
-- pip (Python package installer)
+- UV package manager (10-100x faster than pip)
 
 ### Installation
 
-1. Clone the repository:
+1. Install UV package manager:
+
+**Windows:**
+```powershell
+winget install --id=astral-sh.uv -e
+```
+
+**Linux/Mac:**
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+2. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/uml-mcp.git
+git clone https://github.com/ChistokhinSV/uml-mcp.git
 cd uml-mcp
 ```
 
-2. Install the dependencies:
+3. Install the dependencies:
 
 ```bash
-pip install -r requirements.txt
+uv pip install -e .
 ```
 
-3. For development environments:
+4. For development environment:
 
 ```bash
-pip install -r requirements-dev.txt
+uv pip install -e ".[dev]"
 ```
 
 ### Running the Server
@@ -306,11 +318,11 @@ result = tool.call("generate_class_diagram", {
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/uml-mcp.git
+git clone https://github.com/ChistokhinSV/uml-mcp.git
 cd uml-mcp
 
 # Install dependencies
-pip install -r requirements.txt
+uv pip install -e .
 
 # Run the server
 python mcp_server.py

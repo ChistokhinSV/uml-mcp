@@ -5,28 +5,40 @@ This guide explains how to install and set up the UML-MCP server.
 ## System Requirements
 
 - Python 3.10 or higher
-- pip (Python package installer)
+- UV package manager (10-100x faster than pip)
 - Optional: Docker for running local PlantUML or Kroki servers
 
 ## Installation Steps
 
-1. Clone the repository:
+1. Install UV package manager:
+
+**Windows:**
+```powershell
+winget install --id=astral-sh.uv -e
+```
+
+**Linux/Mac:**
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+2. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/uml-mcp.git
+git clone https://github.com/ChistokhinSV/uml-mcp.git
 cd uml-mcp
 ```
 
-2. Install the dependencies:
+3. Install the dependencies:
 
 ```bash
-pip install -r requirements.txt
+uv pip install -e .
 ```
 
-3. For development environments:
+4. For development environment:
 
 ```bash
-pip install -r requirements-dev.txt
+uv pip install -e ".[dev]"
 ```
 
 ## Verifying Installation

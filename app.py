@@ -186,4 +186,17 @@ async def get_openapi_yaml():
 # Main entry point for local development
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    import sys
+
+    # Configure event loop for cross-platform compatibility
+    # Use uvloop on Linux/Mac for better performance, default loop on Windows
+    loop = "auto"
+    try:
+        if sys.platform != "win32":
+            import uvloop
+            loop = "uvloop"
+            logger.info("Using uvloop for improved async performance")
+    except ImportError:
+        logger.info("Using default asyncio event loop")
+
+    uvicorn.run(app, host="0.0.0.0", port=8000, loop=loop)
