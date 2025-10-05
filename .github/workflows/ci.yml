@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - "mcp/**"
+      - "mcp_core/**"
       - "kroki/**"
       - "mermaid/**"
       - "plantuml/**"
