@@ -45,4 +45,10 @@ Thumbs.db
 # Environment variables
 .env
 
-# Desktop Extension builds are committed to repo for easy download
+# Desktop Extension builds
+# The platform-specific builds are auto-committed by GitHub Actions
+# Ignore uml-mcp.mcpb (generic name from local builds)
+uml-mcp.mcpb
+# But track the platform-specific versions committed by CI
+!uml-mcp-windows.mcpb
+!uml-mcp-linux.mcpb

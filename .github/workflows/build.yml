@@ -74,3 +74,50 @@ jobs:
           name: uml-mcp-${{ runner.os }}
           path: uml-mcp-*.mcpb
           if-no-files-found: error
+
+  commit-builds:
+    needs: build
+    runs-on: ubuntu-latest
+    # Only commit on push to main (not PRs or github-actions commits)
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && github.event.head_commit.author.name != 'github-actions[bot]'
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./artifacts
+
+      - name: Move artifacts to repo root
+        run: |
+          mv ./artifacts/uml-mcp-Windows/uml-mcp-windows.mcpb ./
+          mv ./artifacts/uml-mcp-Linux/uml-mcp-linux.mcpb ./
+          rm -rf ./artifacts
+
+      - name: Check if files changed
+        id: check_changes
+        run: |
+          git add uml-mcp-*.mcpb
+          if git diff --staged --quiet; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push if changed
+        if: steps.check_changes.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add uml-mcp-*.mcpb
+          git commit -m "Auto-update extension builds from CI
+
+          - Windows: uml-mcp-windows.mcpb
+          - Linux: uml-mcp-linux.mcpb
+
+          Built with latest dependencies on ${{ runner.os }}"
+          git push
