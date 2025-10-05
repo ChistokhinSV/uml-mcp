@@ -55,6 +55,7 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         with:
           anthropic_api_key: ${{ secrets.OPENROUTER_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
           settings: |
             {
