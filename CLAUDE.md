@@ -241,3 +241,152 @@ export KROKI_SERVER=http://localhost:8000
 - Logs stored in `logs/uml_mcp_server_YYYY-MM-DD.log`
 - Configured in `mcp_core/core/utils.py:setup_logging()`
 - Both file and console handlers with timestamp, name, level, message format
+
+## Code Review Guidelines
+
+These guidelines are used by the AI code reviewer in GitHub Actions and should be followed for all code contributions.
+
+### Python Code Standards
+
+**Style & Formatting:**
+- Follow PEP 8 conventions
+- Line length: 88 characters (Black formatter)
+- Use type hints for function parameters and return values
+- Prefer f-strings over `.format()` or `%` formatting
+
+**Documentation:**
+- All public functions/classes must have docstrings
+- Use Google-style docstrings with Args, Returns, Raises sections
+- Complex logic should have inline comments explaining "why", not "what"
+
+**Error Handling:**
+- Use specific exception types, not bare `except:`
+- Always log errors with context before raising/returning
+- Validate user inputs and diagram code for injection attacks
+- Handle file I/O errors gracefully (permissions, disk space, etc.)
+
+### Architecture & Design
+
+**MCP Protocol:**
+- Use `@mcp_tool` decorator for all tools
+- Tools must return dict with: `code`, `url`, `playground`, `local_path`
+- Include error messages in return dict if generation fails
+- Follow the single-responsibility principle for tool functions
+
+**Async/Concurrency:**
+- Use `async`/`await` for I/O operations
+- Respect platform differences (uvloop on Linux/Mac, asyncio on Windows)
+- Close resources properly (use context managers)
+
+**Separation of Concerns:**
+- Tools layer: `mcp_core/tools/` - MCP tool definitions only
+- Core logic: `mcp_core/core/` - diagram generation, server setup
+- Clients: `kroki/`, `mermaid/`, etc. - external service integrations
+- Tests: `tests/` - comprehensive test coverage
+
+### Security Best Practices
+
+**Input Validation:**
+- Sanitize all user-provided diagram code
+- Validate diagram types against `DIAGRAM_TYPES` whitelist
+- Check file paths to prevent directory traversal (no `../` in paths)
+- Limit diagram code size to prevent DoS
+
+**Path Safety:**
+- Always use `os.path.join()` or `Path()` for file paths
+- Validate output directories exist and are writable
+- Never execute user-provided code directly
+- Use subprocess with shell=False when calling external tools
+
+**Secrets Management:**
+- Never hardcode API keys or tokens
+- Use environment variables for configuration
+- Don't log sensitive information (API keys, file contents)
+- Exclude `.env` files from version control
+
+### Testing Requirements
+
+**Test Coverage:**
+- Minimum 70% code coverage (ideally 80%+)
+- Unit tests for all new functions
+- Integration tests for diagram generation workflows
+- Test both success and failure paths
+
+**Test Quality:**
+- Use pytest fixtures for common setup
+- Mock external dependencies (Kroki, PlantUML servers)
+- Test cross-platform compatibility (Windows vs Linux)
+- Include edge cases and error conditions
+
+**Test Organization:**
+- One test file per module: `test_<module_name>.py`
+- Descriptive test names: `test_<function>_<scenario>_<expected>`
+- Group related tests in classes: `class TestDiagramTools:`
+
+### Performance Considerations
+
+**Optimization:**
+- Cache diagram results when possible
+- Use streaming for large file operations
+- Minimize API calls to external services
+- Profile code for performance bottlenecks
+
+**Resource Management:**
+- Close file handles after use
+- Limit concurrent diagram generations
+- Clean up temporary files
+- Monitor memory usage for large diagrams
+
+### Dependencies & Compatibility
+
+**Package Management:**
+- All dependencies in `pyproject.toml`
+- Use version constraints: `"package>=1.0.0,<2.0.0"`
+- Platform-specific deps: `"uvloop>=0.17.0; sys_platform != 'win32'"`
+- Keep dependencies minimal and up-to-date
+
+**Cross-Platform:**
+- Test on Windows, macOS, and Linux
+- Use `os.path` or `pathlib.Path` for paths
+- Handle platform-specific event loops correctly
+- Avoid platform-specific shell commands
+
+**Python Versions:**
+- Support Python 3.10+
+- Use `requires-python = ">=3.10"` in pyproject.toml
+- Avoid features from Python 3.11+ unless necessary
+- Test on multiple Python versions in CI
+
+### Documentation Standards
+
+**README Updates:**
+- Document new features and configuration options
+- Update installation instructions if needed
+- Add examples for new diagram types
+- Keep compatibility matrix current
+
+**CLAUDE.md Maintenance:**
+- Update development commands for new workflows
+- Document new architectural patterns
+- Add troubleshooting for common issues
+- Update important patterns section
+
+**Code Comments:**
+- Explain complex algorithms and business logic
+- Document workarounds and known limitations
+- Reference issue numbers for bug fixes
+- Avoid obvious comments ("increment i by 1")
+
+### Git & Pull Requests
+
+**Commit Messages:**
+- Use imperative mood: "Add feature" not "Added feature"
+- First line: concise summary (50 chars max)
+- Body: detailed explanation if needed
+- Reference issues: "Fixes #123", "Relates to #456"
+
+**PR Best Practices:**
+- One feature/fix per PR
+- Include tests for new functionality
+- Update documentation in the same PR
+- Keep PRs small and focused (< 400 lines changed)

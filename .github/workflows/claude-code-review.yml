@@ -1,0 +1,158 @@
+name: Claude Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - "mcp_core/**/*.py"
+      - "kroki/**/*.py"
+      - "mermaid/**/*.py"
+      - "plantuml/**/*.py"
+      - "D2/**/*.py"
+      - "ai_uml/**/*.py"
+      - "tests/**/*.py"
+      - "mcp_server.py"
+      - "app.py"
+      - "pyproject.toml"
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to review'
+        required: true
+        type: number
+
+jobs:
+  claude-review:
+    # Skip draft PRs unless manually triggered
+    if: github.event.pull_request.draft == false || github.event_name == 'workflow_dispatch'
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for better context
+
+      - name: Run Claude Code Review
+        id: claude-review
+        uses: anthropics/claude-code-action@v1
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        with:
+          # Use OpenRouter key for authentication
+          anthropic_api_key: ${{ secrets.OPENROUTER_API_KEY }}
+
+          # Configure y-router API endpoint
+          settings: |
+            {
+              "env": {
+                "ANTHROPIC_API_URL": "https://cc.yovy.app/v1"
+              }
+            }
+
+          # Use Claude Sonnet 4.5
+          model: claude-sonnet-4-20250514
+
+          # Enable progress tracking
+          track_progress: true
+
+          # Maximum conversation turns to prevent excessive API calls
+          claude_args: |
+            --max-turns 3
+            --allowed-tools "Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr list:*),Read,Grep,Glob"
+
+          # Comprehensive review prompt
+          prompt: |
+            You are conducting a comprehensive code review for the UML-MCP project - a diagram generation server with MCP interface.
+
+            **CONTEXT:**
+            - Repository: ${{ github.repository }}
+            - PR Number: ${{ github.event.pull_request.number || github.event.inputs.pr_number }}
+            - Author: ${{ github.event.pull_request.user.login || github.actor }}
+            - Branch: ${{ github.head_ref || github.ref_name }}
+
+            **REVIEW GUIDELINES:**
+            Please review this PR following the project's CLAUDE.md guidelines and check for:
+
+            1. **Code Quality & Best Practices**
+               - Python coding standards (PEP 8)
+               - Type hints and documentation
+               - Error handling and edge cases
+               - Code duplication and refactoring opportunities
+
+            2. **Architecture & Design**
+               - MCP protocol implementation correctness
+               - Proper use of FastMCP decorators
+               - Separation of concerns
+               - Diagram generation logic integrity
+
+            3. **Security Considerations**
+               - Input validation and sanitization
+               - Path traversal vulnerabilities
+               - Injection attack vectors (especially in diagram code)
+               - Secrets and credentials handling
+               - Dependency vulnerabilities
+
+            4. **Testing & Coverage**
+               - Test coverage for new code
+               - Edge case testing
+               - Mock usage and test isolation
+               - Integration test considerations
+
+            5. **Performance & Scalability**
+               - Async/await usage (uvloop on Linux/Mac)
+               - Resource management (file handles, connections)
+               - Caching opportunities
+               - Memory leaks
+
+            6. **Dependencies & Compatibility**
+               - UV package manager compatibility
+               - Cross-platform support (Windows, macOS, Linux)
+               - Python version compatibility (3.10+)
+               - Breaking changes to the API
+
+            7. **Documentation**
+               - Docstrings completeness
+               - CLAUDE.md updates if needed
+               - README.md updates for new features
+               - Inline comments for complex logic
+
+            **INSTRUCTIONS:**
+            1. First, use `gh pr diff ${{ github.event.pull_request.number || github.event.inputs.pr_number }}` to review the changes
+            2. Read relevant files using the Read tool for full context
+            3. Check for similar patterns in the codebase using Grep if needed
+            4. Analyze the code thoroughly based on the criteria above
+            5. Provide constructive, actionable feedback
+            6. Use a severity scale: 🔴 Critical, 🟡 Important, 🟢 Optional
+            7. Post your review using: `gh pr comment ${{ github.event.pull_request.number || github.event.inputs.pr_number }} --body "<your review>"`
+
+            **REVIEW FORMAT:**
+            Structure your review with:
+            - Summary (2-3 sentences)
+            - Findings by severity
+            - Positive aspects
+            - Recommendations
+            - Overall verdict (Approve / Request Changes / Comment)
+
+            Be thorough but concise. Focus on issues that truly matter.
+
+      - name: Comment on PR if review fails
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = ${{ github.event.pull_request.number || github.event.inputs.pr_number }};
+            if (prNumber) {
+              github.rest.issues.createComment({
+                issue_number: prNumber,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: '⚠️ Claude Code Review encountered an error. Please check the workflow logs for details.'
+              });
+            }
