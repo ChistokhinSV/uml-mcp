@@ -8,11 +8,13 @@ UML-MCP is a powerful diagram generation server that implements the Model Contex
 
 ## 🌟 Features
 
+- **Claude Desktop Extension**: One-click installation via `.mcpb` package
 - **Multiple Diagram Types**: Support for UML diagrams (Class, Sequence, Activity, etc.), Mermaid, D2, and more
 - **MCP Integration**: Seamless integration with LLM assistants supporting the Model Context Protocol
 - **Playground Links**: Direct links to online editors for each diagram type
 - **Multiple Output Formats**: SVG, PNG, PDF, and other format options
 - **Easy Configuration**: Works with local and remote diagram rendering services
+- **Cross-Platform**: Works on Windows, macOS, and Linux
 
 ## 📋 Supported Diagram Types
 
@@ -75,27 +77,90 @@ This will start the server using stdio for communication with MCP clients.
 
 ## 🔧 Configuration
 
+### Claude Desktop Extension (Recommended)
+
+The easiest way to install UML-MCP is using the Claude Desktop Extension:
+
+#### One-Click Installation
+
+1. **Download the extension:**
+   ```bash
+   # Build the extension package
+   cd extension
+   ./build.sh           # Linux/Mac
+   # or
+   .\build.ps1          # Windows
+   ```
+
+2. **Install in Claude Desktop:**
+   - Double-click `uml-mcp.mcpb`
+   - Or: Claude Desktop → Settings → Extensions → Import Extension
+   - Configure output directory and click "Install"
+
+3. **Start using:**
+   - Open Claude Desktop
+   - Ask Claude to generate diagrams
+   - Diagrams are automatically saved to your configured directory
+
+**Benefits:**
+- ✅ One-click installation
+- ✅ Automatic dependency management
+- ✅ Secure configuration storage
+- ✅ Cross-platform support
+- ✅ Automatic updates
+
+---
+
 ### Editor Integration
+
+#### Claude Desktop (Manual Configuration)
+
+If you prefer manual configuration or the extension isn't available:
+
+**On MacOS:** `~/Library/Application\ Support/Claude/claude_desktop_config.json`
+**On Windows:** `%APPDATA%/Claude/claude_desktop_config.json`
+
+<details>
+  <summary>Claude Desktop Manual Configuration</summary>
+
+  ```json
+  {
+    "mcpServers": {
+      "uml_diagram_generator": {
+        "command": "python",
+        "args": [
+          "/path/to/uml-mcp/mcp_server.py"
+        ],
+        "env": {
+          "MCP_OUTPUT_DIR": "/path/to/output/directory"
+        }
+      }
+    }
+  }
+  ```
+</details>
 
 #### Cursor
 
 To integrate with Cursor:
 
-```bash
-python mcp/install_to_cursor.py
-```
-
-Or manually configure in Cursor settings:
+<details>
+  <summary>Cursor Configuration</summary>
 
 ```json
-"mcpServers": {
-  "UML-MCP-Server": {
-    "command": "python",
-    "args": ["/path/to/uml-mcp/mcp_server.py"],
-    "output_dir": "/path/to/output"
+{
+  "mcpServers": {
+    "UML-MCP-Server": {
+      "command": "python",
+      "args": ["/path/to/uml-mcp/mcp_server.py"],
+      "env": {
+        "MCP_OUTPUT_DIR": "/path/to/output"
+      }
+    }
   }
 }
 ```
+</details>
 
 ### Environment Variables
 
@@ -216,52 +281,9 @@ The server provides prompts to help create UML diagrams:
 - `sequence_diagram`: Create a UML sequence diagram showing interactions between objects over time
 - `activity_diagram`: Create a UML activity diagram showing workflows and business processes
 
-## Configuration
+## Advanced Configuration
 
-### Install
-
-#### Claude Desktop
-
-On MacOS: `~/Library/Application\ Support/Claude/claude_desktop_config.json`  
-On Windows: `%APPDATA%/Claude/claude_desktop_config.json`
-
-<details>
-  <summary>Claude Desktop Configuration</summary>
-  
-  ```json
-  {
-    "mcpServers": {
-      "uml_diagram_generator": {
-        "command": "python",
-        "args": [
-          "/path/to/uml-mcp/mcp_server.py"
-        ]
-      }
-    }
-  }
-  ```
-</details>
-
-#### Cursor Integration
-
-The UML-MCP Server can also be integrated with Cursor:
-
-<details>
-  <summary>Cursor Configuration</summary>
-  
-  ```json
-  {
-    "mcpServers": {
-      "uml_diagram_generator": {
-        "command": "python",
-        "args": [
-          "/path/to/uml-mcp/mcp_server.py"
-        ]
-      }
-    }
-  }
-  ```
-</details>
+See the [Configuration](#-configuration) section above for Claude Desktop Extension installation or manual setup options.
 
 ## Usage
 

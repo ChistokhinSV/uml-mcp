@@ -1,0 +1,9 @@
+# Build output
+*.mcpb
+build/
+dist/
+
+# Temporary files
+.DS_Store
+Thumbs.db
+*.tmp

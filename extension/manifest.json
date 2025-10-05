@@ -1,0 +1,207 @@
+{
+  "mcpb_version": "1.0",
+  "name": "uml-mcp",
+  "version": "1.2.0",
+  "display_name": "UML Diagram Generator",
+  "description": "Generate UML, Mermaid, D2, and other diagrams directly in Claude Desktop through the Model Context Protocol",
+  "author": {
+    "name": "Sergey Chistokhin",
+    "url": "https://github.com/ChistokhinSV/uml-mcp"
+  },
+  "homepage": "https://github.com/ChistokhinSV/uml-mcp",
+  "license": "MIT",
+  "keywords": [
+    "uml",
+    "diagrams",
+    "plantuml",
+    "mermaid",
+    "d2",
+    "graphviz",
+    "visualization",
+    "architecture"
+  ],
+  "icon": "icon.png",
+  "server": {
+    "type": "python",
+    "command": "python",
+    "args": [
+      "${EXTENSION_DIR}/mcp_server.py"
+    ],
+    "env": {
+      "MCP_OUTPUT_DIR": "${user_config.output_dir}",
+      "KROKI_SERVER": "${user_config.kroki_server}",
+      "USE_LOCAL_KROKI": "${user_config.use_local_kroki}"
+    }
+  },
+  "user_config": {
+    "output_dir": {
+      "type": "string",
+      "title": "Output Directory",
+      "description": "Directory where generated diagrams will be saved",
+      "default": "${HOME}/Documents/UML-MCP/diagrams",
+      "required": true
+    },
+    "kroki_server": {
+      "type": "string",
+      "title": "Kroki Server URL",
+      "description": "URL of the Kroki server for diagram rendering",
+      "default": "https://kroki.io",
+      "required": false
+    },
+    "use_local_kroki": {
+      "type": "boolean",
+      "title": "Use Local Kroki Server",
+      "description": "Enable if you have a local Kroki server running",
+      "default": false,
+      "required": false
+    }
+  },
+  "dependencies": {
+    "python": ">=3.10",
+    "packages": [
+      "fastapi>=0.104.1",
+      "uvicorn>=0.24.0",
+      "typer>=0.9.0",
+      "rich>=13.6.0",
+      "httpx>=0.24.1",
+      "pydantic>=2.4.2",
+      "python-multipart>=0.0.9",
+      "python-dotenv>=1.0.0",
+      "starlette>=0.27.0",
+      "plantUML>=0.3.0",
+      "graphviz>=0.20.1",
+      "pillow>=10.1.0",
+      "jinja2>=3.1.2",
+      "aiofiles>=23.2.1",
+      "mcp>=1.2.0",
+      "requests>=2.28.0",
+      "python-dateutil>=2.8.2",
+      "fastmcp>=0.4.0"
+    ]
+  },
+  "tools": [
+    {
+      "name": "generate_uml",
+      "description": "Generate any UML diagram based on diagram type",
+      "parameters": {
+        "diagram_type": {
+          "type": "string",
+          "description": "Type of diagram (class, sequence, activity, etc.)",
+          "enum": [
+            "class",
+            "sequence",
+            "activity",
+            "usecase",
+            "state",
+            "component",
+            "deployment",
+            "object"
+          ]
+        },
+        "code": {
+          "type": "string",
+          "description": "The PlantUML diagram code"
+        },
+        "output_dir": {
+          "type": "string",
+          "description": "Optional output directory override"
+        }
+      }
+    },
+    {
+      "name": "generate_class_diagram",
+      "description": "Generate UML class diagram from PlantUML code"
+    },
+    {
+      "name": "generate_sequence_diagram",
+      "description": "Generate UML sequence diagram from PlantUML code"
+    },
+    {
+      "name": "generate_activity_diagram",
+      "description": "Generate UML activity diagram from PlantUML code"
+    },
+    {
+      "name": "generate_usecase_diagram",
+      "description": "Generate UML use case diagram from PlantUML code"
+    },
+    {
+      "name": "generate_state_diagram",
+      "description": "Generate UML state diagram from PlantUML code"
+    },
+    {
+      "name": "generate_component_diagram",
+      "description": "Generate UML component diagram from PlantUML code"
+    },
+    {
+      "name": "generate_deployment_diagram",
+      "description": "Generate UML deployment diagram from PlantUML code"
+    },
+    {
+      "name": "generate_object_diagram",
+      "description": "Generate UML object diagram from PlantUML code"
+    },
+    {
+      "name": "generate_mermaid_diagram",
+      "description": "Generate diagrams using Mermaid syntax"
+    },
+    {
+      "name": "generate_d2_diagram",
+      "description": "Generate diagrams using D2 syntax"
+    },
+    {
+      "name": "generate_graphviz_diagram",
+      "description": "Generate diagrams using Graphviz DOT syntax"
+    },
+    {
+      "name": "generate_erd_diagram",
+      "description": "Generate Entity-Relationship diagrams"
+    }
+  ],
+  "prompts": [
+    {
+      "name": "class_diagram",
+      "description": "Create a UML class diagram showing classes, attributes, methods, and relationships"
+    },
+    {
+      "name": "sequence_diagram",
+      "description": "Create a UML sequence diagram showing interactions between objects over time"
+    },
+    {
+      "name": "activity_diagram",
+      "description": "Create a UML activity diagram showing workflows and business processes"
+    }
+  ],
+  "resources": [
+    {
+      "uri": "uml://types",
+      "name": "Available UML Diagram Types",
+      "description": "List of all supported diagram types"
+    },
+    {
+      "uri": "uml://templates",
+      "name": "Diagram Templates",
+      "description": "Template code for creating various diagrams"
+    },
+    {
+      "uri": "uml://examples",
+      "name": "Example Diagrams",
+      "description": "Example diagrams for reference"
+    },
+    {
+      "uri": "uml://formats",
+      "name": "Supported Output Formats",
+      "description": "List of available output formats (SVG, PNG, etc.)"
+    }
+  ],
+  "platform": {
+    "darwin": {
+      "supported": true
+    },
+    "linux": {
+      "supported": true
+    },
+    "win32": {
+      "supported": true
+    }
+  }
+}
