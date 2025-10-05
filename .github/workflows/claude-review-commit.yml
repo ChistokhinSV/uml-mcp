@@ -53,16 +53,10 @@ jobs:
         uses: anthropics/claude-code-action@v1
         env:
           ANTHROPIC_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          ANTHROPIC_API_URL: https://cc.yovy.app/v1
         with:
           anthropic_api_key: ${{ secrets.OPENROUTER_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-
-          settings: |
-            {
-              "env": {
-                "ANTHROPIC_API_URL": "https://cc.yovy.app/v1"
-              }
-            }
 
           claude_args: |
             --max-turns 3
