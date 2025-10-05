@@ -31,12 +31,43 @@ jobs:
         id: commit
         run: |
           if [ -z "${{ github.event.inputs.commit_sha }}" ]; then
-            COMMIT_SHA=$(git rev-parse HEAD)
-            echo "Reviewing latest commit on main: $COMMIT_SHA"
+            # Find latest commit with non-binary changes
+            echo "Finding latest commit with code changes (skipping binary-only commits)..."
+
+            # Get last 20 commits
+            for sha in $(git log --format="%H" -n 20); do
+              # Get changed files in this commit
+              files=$(git show --name-only --format="" $sha)
+
+              # Check if there are any non-binary files
+              # Skip if only contains: .mcpb, .png, .jpg, .jpeg, .gif, .pdf, etc.
+              has_code=false
+              for file in $files; do
+                if [[ ! "$file" =~ \.(mcpb|png|jpg|jpeg|gif|pdf|zip|tar|gz|bz2|exe|bin|dll|so|dylib)$ ]]; then
+                  has_code=true
+                  break
+                fi
+              done
+
+              if [ "$has_code" = true ]; then
+                COMMIT_SHA=$sha
+                echo "Found commit with code changes: $COMMIT_SHA"
+                break
+              else
+                echo "Skipping binary-only commit: $sha"
+              fi
+            done
+
+            # Fallback to HEAD if no code commits found
+            if [ -z "$COMMIT_SHA" ]; then
+              COMMIT_SHA=$(git rev-parse HEAD)
+              echo "No code commits found in last 20, using HEAD: $COMMIT_SHA"
+            fi
           else
             COMMIT_SHA="${{ github.event.inputs.commit_sha }}"
             echo "Reviewing specified commit: $COMMIT_SHA"
           fi
+
           echo "sha=$COMMIT_SHA" >> $GITHUB_OUTPUT
 
           # Get commit details
@@ -91,8 +122,6 @@ jobs:
 
             ## Verdict
             [Approve / Needs Attention / Monitor]
-
-            **Note:** Skip review if commit only contains binary files (.mcpb) - write "Binary-only commit, no code review needed" to review-output.md
 
       - name: Save review output
         if: always()
