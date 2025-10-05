@@ -14,24 +14,33 @@ on:
         default: 'See CHANGELOG.md for details'
 
 jobs:
-  build-and-release:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
+  build-extensions:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ['3.10']
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Python
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: ${{ matrix.python-version }}
 
-      - name: Install UV
+      - name: Install UV (Linux)
+        if: runner.os == 'Linux'
         run: |
           curl -LsSf https://astral.sh/uv/install.sh | sh
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Install UV (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          irm https://astral.sh/uv/install.ps1 | iex
+          echo "$env:USERPROFILE\.cargo\bin" >> $env:GITHUB_PATH
 
       - name: Install dependencies
         run: |
@@ -39,13 +48,37 @@ jobs:
 
       - name: Build Desktop Extension
         run: |
-          cd extension
-          python build.py
+          python extension/build.py
 
-      - name: Verify build
+      - name: Rename extension with platform suffix
+        shell: bash
         run: |
-          ls -lh uml-mcp.mcpb
-          file uml-mcp.mcpb
+          if [ "${{ runner.os }}" == "Windows" ]; then
+            mv uml-mcp.mcpb uml-mcp-windows.mcpb
+          else
+            mv uml-mcp.mcpb uml-mcp-linux.mcpb
+          fi
+
+      - name: Upload extension artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: uml-mcp-${{ runner.os }}
+          path: uml-mcp-*.mcpb
+
+  create-release:
+    needs: build-extensions
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./artifacts
+
+      - name: List artifacts
+        run: ls -R ./artifacts
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
@@ -55,26 +88,36 @@ jobs:
           body: |
             ## 🚀 One-Click Installation for Claude Desktop
 
-            Download `uml-mcp.mcpb` and double-click to install, or import via Claude Desktop → Settings → Extensions.
+            **⚠️ IMPORTANT: Download the version for your operating system:**
+            - **Windows users**: Download `uml-mcp-windows.mcpb`
+            - **Linux/macOS users**: Download `uml-mcp-linux.mcpb`
+
+            Then double-click to install, or import via Claude Desktop → Settings → Extensions.
 
             ### Features
             - 13 diagram generation tools (UML, Mermaid, D2, Graphviz, ERD)
             - 3 prompt templates
-            - Cross-platform support (Windows, macOS, Linux)
-            - Automatic dependency management
+            - Local PlantUML support with bundled JAR
+            - All Python dependencies included (self-contained)
 
             ### Installation
-            1. Download `uml-mcp.mcpb`
+            1. Download the correct `.mcpb` file for your OS (see above)
             2. Double-click the file OR import via Claude Desktop → Settings → Extensions
-            3. Configure output directory
+            3. Configure required settings (output directory)
             4. Start generating diagrams!
+
+            ### What's Included
+            - **Windows version**: Python dependencies with Windows binaries (.pyd)
+            - **Linux version**: Python dependencies with Linux binaries (.so)
+            - Both include: PlantUML JAR (25 MB) for local diagram generation
 
             ### Release Notes
             ${{ github.event.inputs.release_notes }}
 
             See [DESKTOP_EXTENSION_GUIDE.md](https://github.com/ChistokhinSV/uml-mcp/blob/main/DESKTOP_EXTENSION_GUIDE.md) for detailed usage instructions.
           files: |
-            uml-mcp.mcpb
+            ./artifacts/uml-mcp-Windows/uml-mcp-windows.mcpb
+            ./artifacts/uml-mcp-Linux/uml-mcp-linux.mcpb
           draft: false
           prerelease: false
         env:

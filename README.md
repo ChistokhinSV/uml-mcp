@@ -8,9 +8,30 @@ UML-MCP is a powerful diagram generation server that implements the Model Contex
 
 ## 📥 Quick Install
 
-**[⬇️ Download Claude Desktop Extension](https://github.com/ChistokhinSV/uml-mcp/raw/main/uml-mcp.mcpb)** (click to download and install)
+### Claude Desktop Extension
 
-> **One-click installation**: Download the `.mcpb` file and double-click to install in Claude Desktop. Works on Windows, macOS, and Linux. 
+**⚠️ IMPORTANT: Download the version for your operating system:**
+
+- 🪟 **Windows**: [Download uml-mcp-windows.mcpb](https://github.com/ChistokhinSV/uml-mcp/releases/latest/download/uml-mcp-windows.mcpb)
+- 🐧 **Linux/macOS**: [Download uml-mcp-linux.mcpb](https://github.com/ChistokhinSV/uml-mcp/releases/latest/download/uml-mcp-linux.mcpb)
+
+> **One-click installation**: Download the correct `.mcpb` file for your OS and double-click to install in Claude Desktop.
+
+**Why different versions?** Each version includes Python dependencies compiled for the specific platform (Windows `.pyd` or Linux/macOS `.so` binaries).
+
+### Installation Steps
+
+1. Download the correct `.mcpb` file for your operating system
+2. Double-click the file to install, **OR**
+3. Open Claude Desktop → Settings → Extensions → Import Extension
+4. Configure required settings (output directory)
+5. Enable the extension and start using it!
+
+### Troubleshooting
+
+**Error: `ModuleNotFoundError: No module named 'rpds.rpds'`**
+- ❌ You installed the wrong version (e.g., Linux version on Windows)
+- ✅ Download and install the **correct version** for your OS from the links above
 
 ## 🌟 Features
 
@@ -86,9 +107,11 @@ This will start the server using stdio for communication with MCP clients.
 
 ### Claude Desktop Extension (Recommended)
 
-**[⬇️ Download Extension](https://github.com/ChistokhinSV/uml-mcp/raw/main/uml-mcp.mcpb)** and double-click to install.
+**Download the correct version for your OS:**
+- 🪟 [Windows version](https://github.com/ChistokhinSV/uml-mcp/releases/latest/download/uml-mcp-windows.mcpb)
+- 🐧 [Linux/macOS version](https://github.com/ChistokhinSV/uml-mcp/releases/latest/download/uml-mcp-linux.mcpb)
 
-The extension works on Windows, macOS, and Linux. After installation:
+Then double-click to install. After installation:
 - Configure output directory (default: `~/Documents/UML-MCP/diagrams`)
 - Ask Claude to generate diagrams
 - Diagrams are automatically saved to your configured directory
