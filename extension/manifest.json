@@ -45,9 +45,9 @@
     "output_dir": {
       "type": "string",
       "title": "Output Directory",
-      "description": "Directory where generated diagrams will be saved",
+      "description": "Directory where generated diagrams will be saved (default: ~/Documents/UML-MCP/diagrams)",
       "default": "${HOME}/Documents/UML-MCP/diagrams",
-      "required": true
+      "required": false
     },
     "kroki_server": {
       "type": "string",
