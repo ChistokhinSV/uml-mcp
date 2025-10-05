@@ -69,64 +69,30 @@ jobs:
             }
 
           claude_args: |
-            --max-turns 3
+            --max-turns 5
             --model anthropic/claude-sonnet-4.5
             --allowed-tools "Bash(git:*),Read,Grep,Glob,Write"
 
           prompt: |
-            You are reviewing a commit on the main branch of the UML-MCP project.
+            Review commit ${{ steps.commit.outputs.sha }} on main branch.
 
-            **COMMIT DETAILS:**
-            - SHA: ${{ steps.commit.outputs.sha }}
-            - Message: ${{ steps.commit.outputs.message }}
-            - Author: ${{ steps.commit.outputs.author }}
-            - Date: ${{ steps.commit.outputs.date }}
-            - Repository: ${{ github.repository }}
-            - Branch: main
-
-            **YOUR TASK:**
-            1. Use `git show ${{ steps.commit.outputs.sha }}` to see the changes in this commit
-            2. Review the changes following the guidelines in CLAUDE.md
-            3. Focus on:
-               - Code quality issues
-               - Security vulnerabilities
-               - Performance concerns
-               - Breaking changes
-               - Missing tests or documentation
-
-            **REVIEW CRITERIA:**
-            - 🔴 Critical: Security issues, bugs, breaking changes
-            - 🟡 Important: Code quality, performance, best practices
-            - 🟢 Optional: Style improvements, suggestions
-
-            **OUTPUT FORMAT:**
-            Please write your review in Markdown format with these sections:
+            **Task:**
+            1. Run: `git show ${{ steps.commit.outputs.sha }}`
+            2. Analyze changes for: security issues, bugs, code quality, performance
+            3. **IMPORTANT**: Write review to `review-output.md` file using this format:
 
             ## Summary
-            Brief overview (2-3 sentences)
-
-            ## Changes Reviewed
-            List of files changed
+            [2-3 sentences]
 
             ## Findings
-
-            ### 🔴 Critical Issues
-            (if any)
-
-            ### 🟡 Important Issues
-            (if any)
-
-            ### 🟢 Suggestions
-            (if any)
-
-            ## Positive Aspects
-            What was done well
+            ### 🔴 Critical: [issues or "None"]
+            ### 🟡 Important: [issues or "None"]
+            ### 🟢 Suggestions: [suggestions or "None"]
 
             ## Verdict
-            - Overall assessment
-            - Recommend: Approve / Needs attention / Monitor
+            [Approve / Needs Attention / Monitor]
 
-            After writing your review, save it to a file called `review-output.md` so it can be captured.
+            **Note:** Skip review if commit only contains binary files (.mcpb) - write "Binary-only commit, no code review needed" to review-output.md
 
       - name: Save review output
         if: always()
