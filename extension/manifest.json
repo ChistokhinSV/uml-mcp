@@ -1,5 +1,5 @@
 {
-  "mcpb_version": "0.1",
+  "manifest_version": "0.1",
   "name": "uml-mcp",
   "version": "1.2.0",
   "display_name": "UML Diagram Generator",
