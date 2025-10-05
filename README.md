@@ -15,11 +15,12 @@ UML-MCP is a powerful diagram generation server that implements the Model Contex
 ## 🌟 Features
 
 - **Claude Desktop Extension**: One-click installation via `.mcpb` package
+- **Local PlantUML Support**: Generate PlantUML diagrams offline using bundled plantuml.jar (requires Java) - [Setup Guide](docs/PLANTUML_SETUP.md)
 - **Multiple Diagram Types**: Support for UML diagrams (Class, Sequence, Activity, etc.), Mermaid, D2, and more
 - **MCP Integration**: Seamless integration with LLM assistants supporting the Model Context Protocol
 - **Playground Links**: Direct links to online editors for each diagram type
 - **Multiple Output Formats**: SVG, PNG, PDF, and other format options
-- **Easy Configuration**: Works with local and remote diagram rendering services
+- **Flexible Rendering**: Choose between local PlantUML (offline), Kroki service (online), or PlantUML server
 - **Cross-Platform**: Works on Windows, macOS, and Linux
 
 ## 📋 Supported Diagram Types

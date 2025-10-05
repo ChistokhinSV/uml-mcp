@@ -41,6 +41,12 @@ def main():
         if icon_path.exists():
             shutil.copy2(icon_path, build_path / "icon.png")
 
+        # Copy bin directory with plantuml.jar
+        bin_path = script_dir / "bin"
+        if bin_path.exists():
+            print("Copying bin directory (includes plantuml.jar)...")
+            shutil.copytree(bin_path, build_path / "bin")
+
         # Copy server files
         print("Copying server files...")
         shutil.copy2(project_root / "mcp_server.py", build_path / "mcp_server.py")

@@ -32,7 +32,11 @@
       "env": {
         "MCP_OUTPUT_DIR": "${user_config.output_dir}",
         "KROKI_SERVER": "${user_config.kroki_server}",
-        "USE_LOCAL_KROKI": "${user_config.use_local_kroki}"
+        "USE_LOCAL_KROKI": "${user_config.use_local_kroki}",
+        "PLANTUML_JAR_PATH": "${user_config.plantuml_jar_path}",
+        "USE_LOCAL_PLANTUML": "${user_config.use_local_plantuml}",
+        "PLANTUML_SERVER": "${user_config.plantuml_server}",
+        "JAVA_PATH": "${user_config.java_path}"
       }
     }
   },
@@ -56,6 +60,34 @@
       "title": "Use Local Kroki Server",
       "description": "Enable if you have a local Kroki server running",
       "default": false,
+      "required": false
+    },
+    "use_local_plantuml": {
+      "type": "boolean",
+      "title": "Use Local PlantUML JAR",
+      "description": "Enable to use local plantuml.jar instead of server (requires Java)",
+      "default": false,
+      "required": false
+    },
+    "plantuml_jar_path": {
+      "type": "string",
+      "title": "PlantUML JAR Path",
+      "description": "Path to plantuml.jar file (auto-detects in extension directory if not set)",
+      "default": "${__dirname}/bin/plantuml.jar",
+      "required": false
+    },
+    "plantuml_server": {
+      "type": "string",
+      "title": "PlantUML Server URL",
+      "description": "URL of the PlantUML server (used when not using local JAR)",
+      "default": "http://plantuml-server:8080",
+      "required": false
+    },
+    "java_path": {
+      "type": "string",
+      "title": "Java Executable Path",
+      "description": "Path to Java executable (leave empty for auto-detection)",
+      "default": "java",
       "required": false
     }
   }

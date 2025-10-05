@@ -13,6 +13,16 @@ import zlib
 from kroki.kroki import Kroki
 from .config import MCP_SETTINGS
 
+# Import PlantUML client for local generation
+try:
+    from plantuml import PlantUMLClient, JavaNotFoundError, PlantUMLJarNotFoundError
+    PLANTUML_AVAILABLE = True
+except ImportError:
+    PLANTUML_AVAILABLE = False
+    PlantUMLClient = None
+    JavaNotFoundError = None
+    PlantUMLJarNotFoundError = None
+
 # Configure logging
 def setup_logging():
     """Configure and setup logging"""
@@ -50,6 +60,23 @@ def setup_logging():
 
 # Initialize Kroki client with server from configuration
 kroki_client = Kroki(base_url=MCP_SETTINGS.kroki_server)
+
+# Initialize PlantUML client if local PlantUML is enabled
+plantuml_client = None
+USE_LOCAL_PLANTUML = os.environ.get("USE_LOCAL_PLANTUML", "false").lower() == "true"
+
+if USE_LOCAL_PLANTUML and PLANTUML_AVAILABLE:
+    try:
+        java_path = os.environ.get("JAVA_PATH")
+        jar_path = os.environ.get("PLANTUML_JAR_PATH")
+        plantuml_client = PlantUMLClient(java_path=java_path, jar_path=jar_path)
+        logging.info(f"Local PlantUML client initialized: {plantuml_client.jar_path}")
+    except (JavaNotFoundError, PlantUMLJarNotFoundError) as e:
+        logging.warning(f"Failed to initialize PlantUML client: {e}. Falling back to Kroki.")
+        USE_LOCAL_PLANTUML = False
+    except Exception as e:
+        logging.warning(f"Unexpected error initializing PlantUML client: {e}. Falling back to Kroki.")
+        USE_LOCAL_PLANTUML = False
 
 def generate_diagram(diagram_type: str, code: str, output_format: str = "png", output_dir: Optional[str] = None) -> Dict[str, Any]:
     """
@@ -102,16 +129,65 @@ def generate_diagram(diagram_type: str, code: str, output_format: str = "png", o
             if "@enduml" not in code:
                 code = f"{code}\n@enduml"
 
-        # Generate diagram using Kroki service
-        result = kroki_client.generate_diagram(backend_type, code, output_format)
-        
-        # If output directory is provided, save the image locally
+        # Choose generation method based on backend and configuration
         local_path = None
-        if output_dir:
-            local_path = os.path.join(output_dir, f"{filename_prefix}.{output_format}")
-            with open(local_path, 'wb') as f:
-                f.write(result["content"])
-            logger.info(f"Diagram saved to {local_path}")
+
+        # Use local PlantUML client if enabled and backend is plantuml
+        if USE_LOCAL_PLANTUML and plantuml_client and backend_type == "plantuml":
+            logger.info("Using local PlantUML client for diagram generation")
+
+            # Generate output filename if output_dir is provided
+            if output_dir:
+                local_path = os.path.join(output_dir, f"{filename_prefix}.{output_format}")
+
+            # Generate diagram locally
+            result_local = plantuml_client.generate_diagram(
+                diagram_code=code,
+                output_format=output_format,
+                output_file=local_path
+            )
+
+            if not result_local['success']:
+                error_msg = result_local.get('error', 'Unknown error')
+                logger.error(f"Local PlantUML generation failed: {error_msg}")
+                return {
+                    "code": code,
+                    "url": None,
+                    "playground": None,
+                    "local_path": None,
+                    "error": f"PlantUML generation failed: {error_msg}"
+                }
+
+            # Read generated file content for Kroki URL generation
+            local_path = result_local['output_path']
+
+            # Generate Kroki URL for playground (optional)
+            try:
+                kroki_url = kroki_client.get_url(backend_type, code, output_format)
+                playground = kroki_client.get_playground_url(backend_type, code)
+            except Exception:
+                kroki_url = None
+                playground = None
+
+            return {
+                "code": code,
+                "url": kroki_url,
+                "playground": playground,
+                "local_path": local_path,
+                "generated_by": "local_plantuml"
+            }
+
+        else:
+            # Use Kroki service for generation
+            logger.info("Using Kroki service for diagram generation")
+            result = kroki_client.generate_diagram(backend_type, code, output_format)
+
+            # If output directory is provided, save the image locally
+            if output_dir:
+                local_path = os.path.join(output_dir, f"{filename_prefix}.{output_format}")
+                with open(local_path, 'wb') as f:
+                    f.write(result["content"])
+                logger.info(f"Diagram saved to {local_path}")
         
         return {
             "code": code,
