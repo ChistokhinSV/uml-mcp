@@ -11,7 +11,7 @@ from mcp_core.core.config import MCP_SETTINGS
 @pytest.fixture
 def mock_kroki_client():
     """Mock the Kroki client for testing."""
-    with patch('mcp.core.utils.kroki_client') as mock_client:
+    with patch('mcp_core.core.utils.kroki_client') as mock_client:
         # Setup mock response
         mock_client.generate_diagram.return_value = {
             "url": "https://kroki.io/plantuml/svg/test_url",
@@ -79,7 +79,7 @@ def test_output_directory_creation(tmp_path):
     assert not os.path.exists(non_existent_dir)
     
     # Call function with non-existent directory
-    with patch('mcp.core.utils.kroki_client') as mock_client:
+    with patch('mcp_core.core.utils.kroki_client') as mock_client:
         mock_client.generate_diagram.return_value = {
             "url": "test_url",
             "content": b"test content",
