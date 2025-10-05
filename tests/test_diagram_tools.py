@@ -40,12 +40,12 @@ class TestDiagramTools:
         
         # Check that each expected tool was registered
         for tool_name in expected_tools:
-            # Find calls where the first positional argument matches the tool name
+            # Find calls where the 'name' keyword argument matches the tool name
             matching_calls = [
-                call for call in mock_mcp_server.tool.call_args_list 
-                if len(call[0]) > 0 and call[0][0] == tool_name
+                call for call in mock_mcp_server.tool.call_args_list
+                if 'name' in call[1] and call[1]['name'] == tool_name
             ]
-            
+
             assert len(matching_calls) > 0, f"Tool {tool_name} was not registered"
 
     # @patch("mcp.tools.diagram_tools.generate_diagram")
