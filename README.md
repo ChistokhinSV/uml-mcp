@@ -83,19 +83,17 @@ The easiest way to install UML-MCP is using the Claude Desktop Extension:
 
 #### One-Click Installation
 
-1. **Download the extension:**
-   ```bash
-   # Build the extension package
-   cd extension
-   ./build.sh           # Linux/Mac
-   # or
-   .\build.ps1          # Windows
-   ```
+1. **Download the pre-built extension:**
+   - Go to [Releases](https://github.com/ChistokhinSV/uml-mcp/releases)
+   - Download the latest `uml-mcp.mcpb` file
+
+   > **Cross-platform compatible**: The same `.mcpb` file works on Windows, macOS, and Linux
 
 2. **Install in Claude Desktop:**
-   - Double-click `uml-mcp.mcpb`
-   - Or: Claude Desktop → Settings → Extensions → Import Extension
-   - Configure output directory and click "Install"
+   - **Option A**: Double-click `uml-mcp.mcpb`
+   - **Option B**: Claude Desktop → Settings → Extensions → Import Extension → Select `uml-mcp.mcpb`
+   - Configure output directory (default: `~/Documents/UML-MCP/diagrams`)
+   - Click "Install"
 
 3. **Start using:**
    - Open Claude Desktop

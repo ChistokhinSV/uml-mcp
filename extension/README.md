@@ -21,40 +21,16 @@ extension/
 └── build.sh             # Build script to create .mcpb package
 ```
 
-## Building the Extension
+## Installation (For End Users)
 
-### Prerequisites
-- Python 3.10+
-- UV package manager
-- zip utility
+### Download Pre-built Extension
 
-### Build Steps
+**Easiest method:** Download the pre-built `.mcpb` file from [GitHub Releases](https://github.com/ChistokhinSV/uml-mcp/releases)
 
-```bash
-# From the project root directory
-cd extension
-./build.sh
-
-# Or manually:
-cd ..
-zip -r uml-mcp.mcpb \
-  extension/manifest.json \
-  extension/icon.png \
-  mcp_server.py \
-  mcp_core/ \
-  kroki/ \
-  mermaid/ \
-  plantuml/ \
-  D2/ \
-  pyproject.toml
-```
-
-This creates `uml-mcp.mcpb` which can be distributed and installed in Claude Desktop.
-
-## Installation (For Users)
+The `.mcpb` file is **cross-platform** - the same file works on Windows, macOS, and Linux.
 
 ### Method 1: One-Click Install (Recommended)
-1. Download `uml-mcp.mcpb`
+1. Download `uml-mcp.mcpb` from [Releases](https://github.com/ChistokhinSV/uml-mcp/releases)
 2. Double-click the file
 3. Claude Desktop will prompt for configuration
 4. Enter your preferred output directory
@@ -91,6 +67,37 @@ The extension exposes these user-configurable settings:
 - ✅ macOS (darwin)
 - ✅ Linux
 - ✅ Windows (win32)
+
+The same `.mcpb` file works on all platforms - no platform-specific builds needed!
+
+## Building the Extension (For Developers)
+
+If you want to build the extension yourself (e.g., for development or customization):
+
+### Prerequisites
+- Python 3.10+
+- UV package manager
+
+### Build Methods
+
+**Cross-platform Python script (Recommended):**
+```bash
+cd extension
+python build.py
+```
+
+**Platform-specific scripts:**
+```bash
+# Linux/Mac
+cd extension
+bash build.sh
+
+# Windows PowerShell
+cd extension
+.\build.ps1
+```
+
+All methods create `uml-mcp.mcpb` in the project root.
 
 ## Distribution
 

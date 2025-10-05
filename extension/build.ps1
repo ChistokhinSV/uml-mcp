@@ -70,7 +70,8 @@ try {
     # Verify the package
     if (Test-Path $OutputFile) {
         $Size = (Get-Item $OutputFile).Length / 1MB
-        Write-Host "✓ Package created successfully: $OutputFile ($($Size.ToString('0.00')) MB)" -ForegroundColor Green
+        $SizeFormatted = "{0:N2} MB" -f $Size
+        Write-Host "✓ Package created successfully: $OutputFile ($SizeFormatted)" -ForegroundColor Green
         Write-Host ""
         Write-Host "To install:" -ForegroundColor Cyan
         Write-Host "  1. Open Claude Desktop"
